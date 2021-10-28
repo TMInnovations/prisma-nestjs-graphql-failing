@@ -8,14 +8,12 @@ import {
 } from '@nestjs/graphql';
 import {
   Customer,
-  Dalabel,
   Delivery,
   FindManyParcelArgs,
   Parcel,
   ParcelCreateInput,
   ParcelUpdateInput,
   ParcelWhereUniqueInput,
-  Scan,
   Surcharge,
 } from '@prisma/client/nestjs-graphql';
 import { ParcelService } from './parcel.service';
@@ -34,16 +32,6 @@ export class ParcelResolver {
   @ResolveField(() => Customer, { name: 'customer', nullable: true })
   Customer(@Parent() parcel: Parcel) {
     return this.parcelService.findOne({ id: parcel.id }).customer();
-  }
-
-  @ResolveField(() => [Scan], { name: 'scans' })
-  Scans(@Parent() parcel: Parcel) {
-    return this.parcelService.findOne({ id: parcel.id }).scans();
-  }
-
-  @ResolveField(() => [Dalabel], { name: 'labels' })
-  Dalabels(@Parent() parcel: Parcel) {
-    return this.parcelService.findOne({ id: parcel.id }).labels();
   }
 
   @ResolveField(() => [Surcharge], { name: 'surcharges' })
