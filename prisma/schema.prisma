@@ -86,8 +86,6 @@ model User {
   /// @HideField({ match: 'UserCreate*Input' })
   id_history String?  @unique
 
-  /// @HideField({ match: 'UserCreate*Input' })
-  role Role @default(USER)
 
   /// @HideField({ match: 'UserCreate*Input' })
   profile Profile?
@@ -95,52 +93,12 @@ model User {
 
   // BI-DIRECTIONAL RELATIONS
 
-  /// @HideField({ input: true })
-  group Group[]
 
 
   // INVERSE RELATIONS
 
   /// @HideField({ match: 'UserCreate*Input' })
   event_who_event Event[]
-}
-
-enum Role {
-  ADMIN /// allowed to do everything
-  WORKER /// allowed to access user fields
-  USER /// allowed to access own user fields
-}
-
-model Group {
-  id    String  @id @default(cuid())
-  short String  @unique
-  name  String?
-
-
-  // RELATIONS
-
-  /// @HideField({ input: true})
-  rights Right[]
-
-
-  // BI-DIRECTIONAL RELATIONS
-
-  /// @HideField({ input: true})
-  users User[]
-
-}
-
-model Right {
-  id          String  @id @default(cuid())
-  short       String  @unique
-  name        String?
-  description String?
-
-
-  // BI-DIRECTIONAL RELATIONS
-
-  /// @HideField({ input: true })
-  groups Group[]
 }
 
 // Business Logic
