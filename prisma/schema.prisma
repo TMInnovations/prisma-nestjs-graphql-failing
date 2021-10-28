@@ -1,0 +1,601 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+generator nestjsgraphql {
+  provider                              = "node node_modules/prisma-nestjs-graphql"
+  fields_Validator_from                 = "class-validator"
+  fields_Validator_input                = true
+  requireSingleFieldsInWhereUniqueInput = true
+  emitSingle                            = true
+  emitCompiled                          = true
+  purgeOutput                           = true
+  output                                = "../node_modules/@prisma/client/nestjs-graphql"
+}
+
+// MailService
+
+model Mail {
+  id      String    @id @default(cuid())
+  created DateTime  @default(now())
+  state   MailState @default(QUEUED)
+  sent    DateTime?
+  to      String
+  subject String
+  text    String
+
+
+  // RELATIONS
+
+  errors MailError[]
+}
+
+model MailError {
+  id      String   @id @default(cuid())
+  time    DateTime @default(now())
+  message String
+
+
+  // INVERSE RELATIONS
+
+  mail    Mail   @relation(fields: [id_mail], references: [id])
+  id_mail String
+}
+
+enum MailState {
+  QUEUED
+  SENDING
+  ERROR
+  SENT
+}
+
+// Temporal
+
+model Event {
+  /// @HideField({ match: 'EventCreate*Input' })
+  id String @id @default(cuid())
+
+  /// @HideField({ input: true })
+  when DateTime @default(now())
+  what String
+  from Json?
+  to   Json?
+
+
+  // RELATIONS
+
+  /// @HideField({ match: 'EventCreate*Input' })
+  who     User   @relation(fields: [id_user], references: [id])
+  id_user String
+
+
+  // INVERSE RELATIONS
+
+  /// @HideField({ input: true, output: true })
+  history_created_history History? @relation("history_created")
+
+  /// @HideField({ input: true, output: true })
+  updated    History? @relation("history_updated", fields: [id_history], references: [id])
+  /// @HideField({ input: true, output: true })
+  id_history String?
+
+  /// @HideField({ input: true, output: true })
+  history_deleted_history History? @relation("history_deleted")
+}
+
+model History {
+  id String @id @default(cuid())
+
+
+  // RELATIONS
+
+  created    Event   @relation(name: "history_created", fields: [id_created], references: [id])
+  id_created String  @unique
+  /// @HideField({ match: 'HistoryCreate*Input' })
+  updated    Event[] @relation("history_updated")
+  /// @HideField({ match: 'HistoryCreate*Input' })
+  deleted    Event?  @relation(name: "history_deleted", fields: [id_deleted], references: [id])
+  id_deleted String? @unique
+
+
+  // INVERSE RELATIONS
+
+  /// @HideField({ input: true, output: true })
+  user_history_user User? @relation("user_history")
+}
+
+// Auth
+
+model User {
+  id String @id @default(cuid())
+
+
+  // RELATIONS
+
+  /// @HideField({ match: 'UserCreate*Input' })
+  history    History? @relation(name: "user_history", fields: [id_history], references: [id])
+  /// @HideField({ match: 'UserCreate*Input' })
+  id_history String?  @unique
+
+  /// @HideField({ match: 'UserCreate*Input' })
+  role Role @default(USER)
+
+  /// @HideField({ match: 'UserCreate*Input' })
+  profile Profile?
+
+
+  // BI-DIRECTIONAL RELATIONS
+
+  /// @HideField({ input: true })
+  group Group[]
+
+
+  // INVERSE RELATIONS
+
+  /// @HideField({ match: 'UserCreate*Input' })
+  event_who_event Event[]
+}
+
+enum Role {
+  ADMIN /// allowed to do everything
+  WORKER /// allowed to access user fields
+  USER /// allowed to access own user fields
+}
+
+model Group {
+  id    String  @id @default(cuid())
+  short String  @unique
+  name  String?
+
+
+  // RELATIONS
+
+  /// @HideField({ input: true})
+  rights Right[]
+
+
+  // BI-DIRECTIONAL RELATIONS
+
+  /// @HideField({ input: true})
+  users User[]
+
+}
+
+model Right {
+  id          String  @id @default(cuid())
+  short       String  @unique
+  name        String?
+  description String?
+
+
+  // BI-DIRECTIONAL RELATIONS
+
+  /// @HideField({ input: true })
+  groups Group[]
+}
+
+// Business Logic
+
+model Profile {
+  /// @HideField({ match: 'ProfileCreate*Input' })
+  id         String    @id @default(cuid())
+  first_name String?
+  last_name  String?
+  birthday   DateTime?
+  svnr       String?
+
+
+  // RELATIONS
+
+  /// @HideField({ input: true })
+  address    Address? @relation(fields: [id_address], references: [id])
+  /// @HideField({ input: true, output: true })
+  id_address String?  @unique
+
+
+  // BI-DIRECTIONAL RELATIONS
+
+  /// @HideField({ input: true })
+  workers Worker[]
+
+  /// @HideField({ input: true })
+  customer Customer?
+
+
+  // INVERSE RELATIONS
+
+  /// @HideField({ input: true, output: true })
+  user    User?   @relation(fields: [id_user], references: [id])
+  /// @HideField({ input: true, output: true })
+  id_user String? @unique
+
+  /// @HideField({ input: true, output: true })
+  collector_profile_customer Customer? @relation(name: "collector", fields: [customer_numbner], references: [number])
+  /// @HideField({ input: true })
+  customer_numbner           String?
+}
+
+model Address {
+  /// @HideField({ match: 'Address*Create*Input' })
+  id       String  @id @default(cuid())
+  line1    String?
+  line2    String?
+  city     String?
+  province String?
+  zip      String?
+
+
+  // RELATIONS
+
+  /// @HideField({ input: true })
+  country    Country @relation(fields: [id_country], references: [id])
+  /// @HideField({ output: true })
+  id_country String
+
+  /// @HideField({ input: true })
+  telephone Telephone[]
+
+
+  // INVERSE RELATIONS
+
+  /// @HideField({ input: true, output: true })
+  profile Profile?
+
+  /// @HideField({ input: true, output: true })
+  destination Destination?
+
+  /// @HideField({ input: true, output: true })
+  branch Branch?
+}
+
+model Country {
+  /// @HideField({ match: 'CountryCreate*Input' })
+  id     String @id @default(cuid())
+  name   String @unique
+  number Int    @unique
+
+
+  // INVERSE RELATIONS
+
+  /// @HideField({ input: true, output: true })
+  address  Address[]
+  customer Customer[]
+}
+
+model Telephone {
+  /// @HideField({ match: 'Telephone*Create*Input' })
+  id               String         @id @default(cuid())
+  telephone_number String
+  availability     Availability[]
+  contact_type     ContactType
+
+
+  // INVERSE RELATIONS
+
+  /// @HideField({ input: true, output: true })
+  address    Address? @relation(fields: [id_address], references: [id])
+  /// @HideField({ input: true, output: true })
+  id_address String?
+
+}
+
+enum Availability {
+  DAY
+  MORNING
+  EVENING
+  NIGHT
+}
+
+enum ContactType {
+  MOBILE
+  HOME
+  WORK
+}
+
+model Customer {
+  /// @HideField({ match: 'Customer*Create*Input' })
+  number String @id
+
+  type CustomerType
+
+
+  // RELATIONS
+
+  /// @HideField({ input: true })
+  country    Country @relation(fields: [id_country], references: [id])
+  /// @HideField({ output: true })
+  id_country String
+
+  /// @HideField({ input: true })
+  destinations Destination[]
+
+  /// @HideField({ input: true })
+  collectors Profile[] @relation(name: "collector")
+
+  /// @HideField({ input: true })
+  favoriteDelivery    Delivery @relation(fields: [id_favoriteDelivery], references: [id])
+  /// @HideField({ output: true, input: true })
+  id_favoriteDelivery String   @unique
+
+
+  // BI-DIRECTIONAL RELATIONS
+
+  /// @HideField({ input: true })
+  profile    Profile @relation(fields: [id_profile], references: [id])
+  /// @HideField({ input: true, output: true })
+  id_profile String  @unique
+
+  Parcel Parcel[]
+}
+
+enum CustomerType {
+  PRIVATE
+  BUSINESS
+}
+
+model Destination {
+  /// @HideField({ match: 'Destination*Create*Input' })
+  id    String @id @default(cuid())
+  name  String
+  email String
+
+
+  // RELATIONS
+
+  /// @HideField({ input: true })
+  address    Address? @relation(fields: [id_address], references: [id])
+  /// @HideField({ input: true, output: true })
+  id_address String?  @unique
+
+
+  // INVERSE RELATIONS
+
+  /// @HideField({ input: true , output: true})
+  customer_destination_customer Customer? @relation(fields: [customer_number], references: [number])
+  /// @HideField({ input: true })
+  customer_number               String?
+
+  /// @HideField({ input: true, output: true })
+  delivery_destination_delivery Delivery?
+}
+
+model Company {
+  id   String @id @default(cuid())
+  name String
+  uid  String
+
+
+  // RELATIONS
+  branches Branch[]
+}
+
+model Branch {
+  id   String @id @default(cuid())
+  name String
+
+  // RELATIONS
+
+  /// @HideField({ input: true })
+  address    Address @relation(fields: [id_address], references: [id])
+  /// @HideField({ input: true, output: true })
+  id_address String  @unique
+
+  // INVERSE RELATIONS
+
+  /// @HideField({ input: true, output: true })
+  company    Company @relation(fields: [id_company], references: [id])
+  /// @HideField({ input: true, output: true })
+  id_company String
+
+  /// @HideField({ input: true, output: true })
+  delivery_branch_deliveries Delivery[]
+
+  /// @HideField({ input: true })
+  worker_responsibilities_branch Responsibility[]
+}
+
+enum DeliveryStrategy {
+  SHIP
+  COLLECT
+}
+
+model Delivery {
+  /// @HideField({ match: 'DeliveryUncheckedCreate*Input' })
+  id       String           @id @default(cuid())
+  /// @HideField({ input: true })
+  strategy DeliveryStrategy
+
+
+  // RELATIONS
+
+  /// @HideField({ input: true })
+  branch    Branch? @relation(fields: [id_branch], references: [id])
+  /// @HideField({ output: true })
+  id_branch String?
+
+  /// @HideField({ input: true })
+  destination    Destination? @relation(fields: [id_destination], references: [id])
+  /// @HideField({ output: true })
+  id_destination String?      @unique
+
+
+  // INVERSE RELATIONS
+
+  /// @HideField({ input: true, output: true })
+  customer_favouriteDelivery_customer Customer?
+  Parcel                              Parcel[]
+}
+
+model Parcel {
+  id String @id @default(cuid())
+
+  l Float?
+  b Float?
+  h Float?
+
+  mass Float?
+
+
+  // RELATIONS
+
+  labels Dalabel[]
+
+  delivery    Delivery? @relation(fields: [id_delivery], references: [id])
+  id_delivery String?
+
+  customer        Customer? @relation(fields: [customer_number], references: [number])
+  customer_number String?
+
+  surcharges Surcharge[]
+
+
+  // INVERSE RELATIONS
+
+  scans Scan[]
+
+}
+
+model Dalabel {
+  id String @id @default(cuid())
+
+  data String
+
+  active Boolean @default(true)
+
+
+  // INVERSE RELATION
+
+  parcel    Parcel @relation(fields: [id_parcel], references: [id])
+  id_parcel String
+
+  scan_dalabel_scans Scan[]
+}
+
+model Scan {
+  id String @id @default(cuid())
+
+  type ScanType
+
+  data String
+
+
+  // RELATIONS
+
+  //machine Machine?
+
+  dalabel    Dalabel? @relation(fields: [id_dalabel], references: [id])
+  id_dalabel String?
+
+
+  // INVERSE RELATIONS
+
+  parcel    Parcel? @relation(fields: [id_parcel], references: [id])
+  id_parcel String?
+}
+
+enum ScanType {
+  DALABEL
+  UPS
+  DHL
+  GLS
+  POST_AT
+  UNDEFINED
+}
+
+model Surcharge {
+  id String @id @default(cuid())
+
+  price Float
+
+
+  // RELATIONS
+
+  type             Surchargetype @relation(fields: [id_surchargetype], references: [id])
+  id_surchargetype String
+
+
+  // INVERSE RELATIONS
+
+  parcel_surcharge_parcel Parcel @relation(fields: [id_parcel], references: [id])
+  id_parcel               String
+}
+
+model Surchargetype {
+  id String @id @default(cuid())
+
+  name String
+
+  standard_price Float
+
+
+  // INVERSE RELATIONS
+
+  surcharge_surchargeType_surcharges Surcharge[]
+}
+
+// Worker
+
+enum WorkerType {
+  INTERNAL
+  EXTERNAL
+}
+
+model Worker {
+  /// @HideField({ match: 'Worker*Create*Input' })
+  personnel_number String  @id
+  activated        Boolean @default(true)
+
+
+  // RELATIONS
+
+  type WorkerType
+
+  responsibilities Responsibility[]
+
+
+  // INVERSE RELATIONS
+
+  profile    Profile @relation(fields: [id_profile], references: [id])
+  id_profile String
+}
+
+enum Section {
+  ANNAHME
+  TRANSPORT
+  AUSGABE
+  ABRECHNUNG
+  TOOLS
+  LISTEN
+  STATISTIK
+  KONFIGURATION
+}
+
+model Responsibility {
+
+
+  // RELATIONS
+
+  section Section
+
+  branch    Branch @relation(fields: [id_branch], references: [id])
+  /// @HideField({ output: true })
+  id_branch String
+
+
+  // INVERSE RELATIONS
+
+  worker                 Worker @relation(fields: [personnelNumber_worker], references: [personnel_number])
+  /// @HideField({ output: true })
+  personnelNumber_worker String
+
+
+
+  @@id([personnelNumber_worker, id_branch, section])
+}
+
+// Customer
