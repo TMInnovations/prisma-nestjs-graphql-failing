@@ -395,8 +395,6 @@ model Branch {
   /// @HideField({ input: true, output: true })
   delivery_branch_deliveries Delivery[]
 
-  /// @HideField({ input: true })
-  worker_responsibilities_branch Responsibility[]
 }
 
 enum DeliveryStrategy {
@@ -555,47 +553,12 @@ model Worker {
 
   type WorkerType
 
-  responsibilities Responsibility[]
 
 
   // INVERSE RELATIONS
 
   profile    Profile @relation(fields: [id_profile], references: [id])
   id_profile String
-}
-
-enum Section {
-  ANNAHME
-  TRANSPORT
-  AUSGABE
-  ABRECHNUNG
-  TOOLS
-  LISTEN
-  STATISTIK
-  KONFIGURATION
-}
-
-model Responsibility {
-
-
-  // RELATIONS
-
-  section Section
-
-  branch    Branch @relation(fields: [id_branch], references: [id])
-  /// @HideField({ output: true })
-  id_branch String
-
-
-  // INVERSE RELATIONS
-
-  worker                 Worker @relation(fields: [personnelNumber_worker], references: [personnel_number])
-  /// @HideField({ output: true })
-  personnelNumber_worker String
-
-
-
-  @@id([personnelNumber_worker, id_branch, section])
 }
 
 // Customer
