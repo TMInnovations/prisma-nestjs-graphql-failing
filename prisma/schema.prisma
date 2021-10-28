@@ -18,42 +18,6 @@ generator nestjsgraphql {
   output                                = "../node_modules/@prisma/client/nestjs-graphql"
 }
 
-// MailService
-
-model Mail {
-  id      String    @id @default(cuid())
-  created DateTime  @default(now())
-  state   MailState @default(QUEUED)
-  sent    DateTime?
-  to      String
-  subject String
-  text    String
-
-
-  // RELATIONS
-
-  errors MailError[]
-}
-
-model MailError {
-  id      String   @id @default(cuid())
-  time    DateTime @default(now())
-  message String
-
-
-  // INVERSE RELATIONS
-
-  mail    Mail   @relation(fields: [id_mail], references: [id])
-  id_mail String
-}
-
-enum MailState {
-  QUEUED
-  SENDING
-  ERROR
-  SENT
-}
-
 // Temporal
 
 model Event {
