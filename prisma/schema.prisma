@@ -191,10 +191,8 @@ model Country {
 
 model Telephone {
   /// @HideField({ match: 'Telephone*Create*Input' })
-  id               String         @id @default(cuid())
+  id               String @id @default(cuid())
   telephone_number String
-  availability     Availability[]
-  contact_type     ContactType
 
 
   // INVERSE RELATIONS
@@ -206,25 +204,9 @@ model Telephone {
 
 }
 
-enum Availability {
-  DAY
-  MORNING
-  EVENING
-  NIGHT
-}
-
-enum ContactType {
-  MOBILE
-  HOME
-  WORK
-}
-
 model Customer {
   /// @HideField({ match: 'Customer*Create*Input' })
   number String @id
-
-  type CustomerType
-
 
   // RELATIONS
 
@@ -253,11 +235,6 @@ model Customer {
   id_profile String  @unique
 
   Parcel Parcel[]
-}
-
-enum CustomerType {
-  PRIVATE
-  BUSINESS
 }
 
 model Destination {
@@ -319,16 +296,9 @@ model Branch {
 
 }
 
-enum DeliveryStrategy {
-  SHIP
-  COLLECT
-}
-
 model Delivery {
   /// @HideField({ match: 'DeliveryUncheckedCreate*Input' })
-  id       String           @id @default(cuid())
-  /// @HideField({ input: true })
-  strategy DeliveryStrategy
+  id String @id @default(cuid())
 
 
   // RELATIONS
@@ -399,7 +369,6 @@ model Dalabel {
 model Scan {
   id String @id @default(cuid())
 
-  type ScanType
 
   data String
 
@@ -416,15 +385,6 @@ model Scan {
 
   parcel    Parcel? @relation(fields: [id_parcel], references: [id])
   id_parcel String?
-}
-
-enum ScanType {
-  DALABEL
-  UPS
-  DHL
-  GLS
-  POST_AT
-  UNDEFINED
 }
 
 model Surcharge {
@@ -460,11 +420,6 @@ model Surchargetype {
 
 // Worker
 
-enum WorkerType {
-  INTERNAL
-  EXTERNAL
-}
-
 model Worker {
   /// @HideField({ match: 'Worker*Create*Input' })
   personnel_number String  @id
@@ -473,7 +428,6 @@ model Worker {
 
   // RELATIONS
 
-  type WorkerType
 
 
 
