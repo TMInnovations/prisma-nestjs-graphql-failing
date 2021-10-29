@@ -21,10 +21,8 @@ generator nestjsgraphql {
 // Temporal
 
 model Event {
-  /// @HideField({ match: 'EventCreate*Input' })
   id String @id @default(cuid())
 
-  /// @HideField({ input: true })
   when DateTime @default(now())
   what String
   from Json?
@@ -33,22 +31,17 @@ model Event {
 
   // RELATIONS
 
-  /// @HideField({ match: 'EventCreate*Input' })
   who     User   @relation(fields: [id_user], references: [id])
   id_user String
 
 
   // INVERSE RELATIONS
 
-  /// @HideField({ input: true, output: true })
   history_created_history History? @relation("history_created")
 
-  /// @HideField({ input: true, output: true })
   updated    History? @relation("history_updated", fields: [id_history], references: [id])
-  /// @HideField({ input: true, output: true })
   id_history String?
 
-  /// @HideField({ input: true, output: true })
   history_deleted_history History? @relation("history_deleted")
 }
 
@@ -60,16 +53,13 @@ model History {
 
   created    Event   @relation(name: "history_created", fields: [id_created], references: [id])
   id_created String  @unique
-  /// @HideField({ match: 'HistoryCreate*Input' })
   updated    Event[] @relation("history_updated")
-  /// @HideField({ match: 'HistoryCreate*Input' })
   deleted    Event?  @relation(name: "history_deleted", fields: [id_deleted], references: [id])
   id_deleted String? @unique
 
 
   // INVERSE RELATIONS
 
-  /// @HideField({ input: true, output: true })
   user_history_user User? @relation("user_history")
 }
 
@@ -81,13 +71,10 @@ model User {
 
   // RELATIONS
 
-  /// @HideField({ match: 'UserCreate*Input' })
   history    History? @relation(name: "user_history", fields: [id_history], references: [id])
-  /// @HideField({ match: 'UserCreate*Input' })
   id_history String?  @unique
 
 
-  /// @HideField({ match: 'UserCreate*Input' })
   profile Profile?
 
 
@@ -97,14 +84,12 @@ model User {
 
   // INVERSE RELATIONS
 
-  /// @HideField({ match: 'UserCreate*Input' })
   event_who_event Event[]
 }
 
 // Business Logic
 
 model Profile {
-  /// @HideField({ match: 'ProfileCreate*Input' })
   id         String    @id @default(cuid())
   first_name String?
   last_name  String?
@@ -114,36 +99,27 @@ model Profile {
 
   // RELATIONS
 
-  /// @HideField({ input: true })
   address    Address? @relation(fields: [id_address], references: [id])
-  /// @HideField({ input: true, output: true })
   id_address String?  @unique
 
 
   // BI-DIRECTIONAL RELATIONS
 
-  /// @HideField({ input: true })
   workers Worker[]
 
-  /// @HideField({ input: true })
   customer Customer?
 
 
   // INVERSE RELATIONS
 
-  /// @HideField({ input: true, output: true })
   user    User?   @relation(fields: [id_user], references: [id])
-  /// @HideField({ input: true, output: true })
   id_user String? @unique
 
-  /// @HideField({ input: true, output: true })
   collector_profile_customer Customer? @relation(name: "collector", fields: [customer_numbner], references: [number])
-  /// @HideField({ input: true })
   customer_numbner           String?
 }
 
 model Address {
-  /// @HideField({ match: 'Address*Create*Input' })
   id       String  @id @default(cuid())
   line1    String?
   line2    String?
@@ -154,29 +130,22 @@ model Address {
 
   // RELATIONS
 
-  /// @HideField({ input: true })
   country    Country @relation(fields: [id_country], references: [id])
-  /// @HideField({ output: true })
   id_country String
 
-  /// @HideField({ input: true })
   telephone Telephone[]
 
 
   // INVERSE RELATIONS
 
-  /// @HideField({ input: true, output: true })
   profile Profile?
 
-  /// @HideField({ input: true, output: true })
   destination Destination?
 
-  /// @HideField({ input: true, output: true })
   branch Branch?
 }
 
 model Country {
-  /// @HideField({ match: 'CountryCreate*Input' })
   id     String @id @default(cuid())
   name   String @unique
   number Int    @unique
@@ -184,13 +153,11 @@ model Country {
 
   // INVERSE RELATIONS
 
-  /// @HideField({ input: true, output: true })
   address  Address[]
   customer Customer[]
 }
 
 model Telephone {
-  /// @HideField({ match: 'Telephone*Create*Input' })
   id               String         @id @default(cuid())
   telephone_number String
   availability     Availability[]
@@ -199,9 +166,7 @@ model Telephone {
 
   // INVERSE RELATIONS
 
-  /// @HideField({ input: true, output: true })
   address    Address? @relation(fields: [id_address], references: [id])
-  /// @HideField({ input: true, output: true })
   id_address String?
 
 }
@@ -220,7 +185,6 @@ enum ContactType {
 }
 
 model Customer {
-  /// @HideField({ match: 'Customer*Create*Input' })
   number String @id
 
   type CustomerType
@@ -228,28 +192,20 @@ model Customer {
 
   // RELATIONS
 
-  /// @HideField({ input: true })
   country    Country @relation(fields: [id_country], references: [id])
-  /// @HideField({ output: true })
   id_country String
 
-  /// @HideField({ input: true })
   destinations Destination[]
 
-  /// @HideField({ input: true })
   collectors Profile[] @relation(name: "collector")
 
-  /// @HideField({ input: true })
   favoriteDelivery    Delivery @relation(fields: [id_favoriteDelivery], references: [id])
-  /// @HideField({ output: true, input: true })
   id_favoriteDelivery String   @unique
 
 
   // BI-DIRECTIONAL RELATIONS
 
-  /// @HideField({ input: true })
   profile    Profile @relation(fields: [id_profile], references: [id])
-  /// @HideField({ input: true, output: true })
   id_profile String  @unique
 
   Parcel Parcel[]
@@ -261,7 +217,6 @@ enum CustomerType {
 }
 
 model Destination {
-  /// @HideField({ match: 'Destination*Create*Input' })
   id    String @id @default(cuid())
   name  String
   email String
@@ -269,20 +224,15 @@ model Destination {
 
   // RELATIONS
 
-  /// @HideField({ input: true })
   address    Address? @relation(fields: [id_address], references: [id])
-  /// @HideField({ input: true, output: true })
   id_address String?  @unique
 
 
   // INVERSE RELATIONS
 
-  /// @HideField({ input: true , output: true})
   customer_destination_customer Customer? @relation(fields: [customer_number], references: [number])
-  /// @HideField({ input: true })
   customer_number               String?
 
-  /// @HideField({ input: true, output: true })
   delivery_destination_delivery Delivery?
 }
 
@@ -302,19 +252,14 @@ model Branch {
 
   // RELATIONS
 
-  /// @HideField({ input: true })
   address    Address @relation(fields: [id_address], references: [id])
-  /// @HideField({ input: true, output: true })
   id_address String  @unique
 
   // INVERSE RELATIONS
 
-  /// @HideField({ input: true, output: true })
   company    Company @relation(fields: [id_company], references: [id])
-  /// @HideField({ input: true, output: true })
   id_company String
 
-  /// @HideField({ input: true, output: true })
   delivery_branch_deliveries Delivery[]
 
 }
@@ -325,28 +270,21 @@ enum DeliveryStrategy {
 }
 
 model Delivery {
-  /// @HideField({ match: 'DeliveryUncheckedCreate*Input' })
   id       String           @id @default(cuid())
-  /// @HideField({ input: true })
   strategy DeliveryStrategy
 
 
   // RELATIONS
 
-  /// @HideField({ input: true })
   branch    Branch? @relation(fields: [id_branch], references: [id])
-  /// @HideField({ output: true })
   id_branch String?
 
-  /// @HideField({ input: true })
   destination    Destination? @relation(fields: [id_destination], references: [id])
-  /// @HideField({ output: true })
   id_destination String?      @unique
 
 
   // INVERSE RELATIONS
 
-  /// @HideField({ input: true, output: true })
   customer_favouriteDelivery_customer Customer?
   Parcel                              Parcel[]
 }
@@ -466,7 +404,6 @@ enum WorkerType {
 }
 
 model Worker {
-  /// @HideField({ match: 'Worker*Create*Input' })
   personnel_number String  @id
   activated        Boolean @default(true)
 
