@@ -154,8 +154,6 @@ model Address {
 
   // RELATIONS
 
-  /// @HideField({ input: true })
-  country    Country @relation(fields: [id_country], references: [id])
   /// @HideField({ output: true })
   id_country String
 
@@ -173,20 +171,6 @@ model Address {
 
   /// @HideField({ input: true, output: true })
   branch Branch?
-}
-
-model Country {
-  /// @HideField({ match: 'CountryCreate*Input' })
-  id     String @id @default(cuid())
-  name   String @unique
-  number Int    @unique
-
-
-  // INVERSE RELATIONS
-
-  /// @HideField({ input: true, output: true })
-  address  Address[]
-  customer Customer[]
 }
 
 model Telephone {
@@ -227,11 +211,6 @@ model Customer {
 
 
   // RELATIONS
-
-  /// @HideField({ input: true })
-  country    Country @relation(fields: [id_country], references: [id])
-  /// @HideField({ output: true })
-  id_country String
 
   /// @HideField({ input: true })
   destinations Destination[]
