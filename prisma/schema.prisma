@@ -99,10 +99,6 @@ model Profile {
 
   // RELATIONS
 
-  address    Address? @relation(fields: [id_address], references: [id])
-  id_address String?  @unique
-
-
   // BI-DIRECTIONAL RELATIONS
 
   workers Worker[]
@@ -117,28 +113,6 @@ model Profile {
 
   collector_profile_customer Customer? @relation(name: "collector", fields: [customer_numbner], references: [number])
   customer_numbner           String?
-}
-
-model Address {
-  id       String  @id @default(cuid())
-  line1    String?
-  line2    String?
-  city     String?
-  province String?
-  zip      String?
-
-
-  // RELATIONS
-
-  id_country String
-
-
-
-  // INVERSE RELATIONS
-
-  profile Profile?
-
-  destination Destination?
 }
 
 model Customer {
@@ -170,9 +144,6 @@ model Destination {
 
 
   // RELATIONS
-
-  address    Address? @relation(fields: [id_address], references: [id])
-  id_address String?  @unique
 
 
   // INVERSE RELATIONS
