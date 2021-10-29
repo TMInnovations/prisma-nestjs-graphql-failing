@@ -140,8 +140,6 @@ model Address {
   profile Profile?
 
   destination Destination?
-
-  branch Branch?
 }
 
 model Telephone {
@@ -198,29 +196,11 @@ model Destination {
   delivery_destination_delivery Delivery?
 }
 
-model Branch {
-  id   String @id @default(cuid())
-  name String
-
-  // RELATIONS
-
-  address    Address @relation(fields: [id_address], references: [id])
-  id_address String  @unique
-
-  // INVERSE RELATIONS
-
-  delivery_branch_deliveries Delivery[]
-
-}
-
 model Delivery {
   id String @id @default(cuid())
 
 
   // RELATIONS
-
-  branch    Branch? @relation(fields: [id_branch], references: [id])
-  id_branch String?
 
   destination    Destination? @relation(fields: [id_destination], references: [id])
   id_destination String?      @unique
