@@ -232,7 +232,6 @@ model Parcel {
   customer        Customer? @relation(fields: [customer_number], references: [number])
   customer_number String?
 
-  surcharges Surcharge[]
 
 
   // INVERSE RELATIONS
@@ -252,37 +251,6 @@ model Dalabel {
 
   parcel    Parcel @relation(fields: [id_parcel], references: [id])
   id_parcel String
-}
-
-model Surcharge {
-  id String @id @default(cuid())
-
-  price Float
-
-
-  // RELATIONS
-
-  type             Surchargetype @relation(fields: [id_surchargetype], references: [id])
-  id_surchargetype String
-
-
-  // INVERSE RELATIONS
-
-  parcel_surcharge_parcel Parcel @relation(fields: [id_parcel], references: [id])
-  id_parcel               String
-}
-
-model Surchargetype {
-  id String @id @default(cuid())
-
-  name String
-
-  standard_price Float
-
-
-  // INVERSE RELATIONS
-
-  surcharge_surchargeType_surcharges Surcharge[]
 }
 
 // Worker

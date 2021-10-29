@@ -14,7 +14,6 @@ import {
   ParcelCreateInput,
   ParcelUpdateInput,
   ParcelWhereUniqueInput,
-  Surcharge,
 } from '@prisma/client/nestjs-graphql';
 import { ParcelService } from './parcel.service';
 
@@ -32,11 +31,6 @@ export class ParcelResolver {
   @ResolveField(() => Customer, { name: 'customer', nullable: true })
   Customer(@Parent() parcel: Parcel) {
     return this.parcelService.findOne({ id: parcel.id }).customer();
-  }
-
-  @ResolveField(() => [Surcharge], { name: 'surcharges' })
-  Surcharges(@Parent() parcel: Parcel) {
-    return this.parcelService.findOne({ id: parcel.id }).surcharges();
   }
 
   // CRUD
