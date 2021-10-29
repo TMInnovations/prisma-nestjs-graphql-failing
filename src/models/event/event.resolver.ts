@@ -9,9 +9,9 @@ import {
 import {
   Event,
   EventCreateInput,
-  EventUpdateInput,
   EventWhereUniqueInput,
   FindManyEventArgs,
+  UpdateOneEventArgs,
   User,
 } from '@prisma/client/nestjs-graphql';
 import { EventService } from './event.service';
@@ -45,12 +45,8 @@ export class EventResolver {
   }
 
   @Mutation(() => Event)
-  updateEvent(
-    @Args('where', { type: () => EventWhereUniqueInput })
-    where: EventWhereUniqueInput,
-    @Args('updateEventInput') updateEventInput: EventUpdateInput,
-  ) {
-    return this.eventService.update(where, updateEventInput);
+  updateEvent(@Args('args') args: UpdateOneEventArgs) {
+    return this.eventService.update(args);
   }
 
   @Mutation(() => Event)
