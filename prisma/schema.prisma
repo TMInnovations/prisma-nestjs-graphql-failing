@@ -132,7 +132,6 @@ model Address {
 
   id_country String
 
-  telephone Telephone[]
 
 
   // INVERSE RELATIONS
@@ -140,18 +139,6 @@ model Address {
   profile Profile?
 
   destination Destination?
-}
-
-model Telephone {
-  id               String @id @default(cuid())
-  telephone_number String
-
-
-  // INVERSE RELATIONS
-
-  address    Address? @relation(fields: [id_address], references: [id])
-  id_address String?
-
 }
 
 model Customer {
