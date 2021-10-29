@@ -224,8 +224,6 @@ model Parcel {
 
   // RELATIONS
 
-  labels Dalabel[]
-
   delivery    Delivery? @relation(fields: [id_delivery], references: [id])
   id_delivery String?
 
@@ -237,20 +235,6 @@ model Parcel {
   // INVERSE RELATIONS
 
 
-}
-
-model Dalabel {
-  id String @id @default(cuid())
-
-  data String
-
-  active Boolean @default(true)
-
-
-  // INVERSE RELATION
-
-  parcel    Parcel @relation(fields: [id_parcel], references: [id])
-  id_parcel String
 }
 
 // Worker
