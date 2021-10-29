@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import {
   EventCreateInput,
-  EventUncheckedUpdateInput,
+  EventUpdateInput,
   EventWhereUniqueInput,
   FindManyEventArgs,
 } from '@prisma/client/nestjs-graphql';
@@ -23,10 +23,7 @@ export class EventService {
     return this.prisma.event.findUnique({ where });
   }
 
-  update(
-    where: EventWhereUniqueInput,
-    updateEventInput: EventUncheckedUpdateInput,
-  ) {
+  update(where: EventWhereUniqueInput, updateEventInput: EventUpdateInput) {
     return this.prisma.event.update({ where, data: updateEventInput });
   }
 

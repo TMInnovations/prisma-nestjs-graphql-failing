@@ -9,7 +9,7 @@ import {
 import {
   Event,
   EventCreateInput,
-  EventUncheckedUpdateInput,
+  EventUpdateInput,
   EventWhereUniqueInput,
   FindManyEventArgs,
   User,
@@ -48,7 +48,7 @@ export class EventResolver {
   updateEvent(
     @Args('where', { type: () => EventWhereUniqueInput })
     where: EventWhereUniqueInput,
-    @Args('updateEventInput') updateEventInput: EventUncheckedUpdateInput,
+    @Args('updateEventInput') updateEventInput: EventUpdateInput,
   ) {
     return this.eventService.update(where, updateEventInput);
   }
