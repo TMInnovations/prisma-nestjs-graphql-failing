@@ -99,8 +99,6 @@ model Profile {
 
   // RELATIONS
 
-  address    Address? @relation(fields: [id_address], references: [id])
-  id_address String?  @unique
 
 
   // BI-DIRECTIONAL RELATIONS
@@ -119,32 +117,6 @@ model Profile {
   customer_numbner           String?
 }
 
-model Address {
-  id       String  @id @default(cuid())
-  line1    String?
-  line2    String?
-  city     String?
-  province String?
-  zip      String?
-
-
-  // RELATIONS
-
-  country    Country @relation(fields: [id_country], references: [id])
-  id_country String
-
-  telephone Telephone[]
-
-
-  // INVERSE RELATIONS
-
-  profile Profile?
-
-  destination Destination?
-
-  branch Branch?
-}
-
 model Country {
   id     String @id @default(cuid())
   name   String @unique
@@ -153,22 +125,7 @@ model Country {
 
   // INVERSE RELATIONS
 
-  address  Address[]
   customer Customer[]
-}
-
-model Telephone {
-  id               String         @id @default(cuid())
-  telephone_number String
-  availability     Availability[]
-  contact_type     ContactType
-
-
-  // INVERSE RELATIONS
-
-  address    Address? @relation(fields: [id_address], references: [id])
-  id_address String?
-
 }
 
 enum Availability {
@@ -224,9 +181,6 @@ model Destination {
 
   // RELATIONS
 
-  address    Address? @relation(fields: [id_address], references: [id])
-  id_address String?  @unique
-
 
   // INVERSE RELATIONS
 
@@ -251,9 +205,6 @@ model Branch {
   name String
 
   // RELATIONS
-
-  address    Address @relation(fields: [id_address], references: [id])
-  id_address String  @unique
 
   // INVERSE RELATIONS
 
