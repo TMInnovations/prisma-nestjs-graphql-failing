@@ -198,16 +198,6 @@ model Destination {
   delivery_destination_delivery Delivery?
 }
 
-model Company {
-  id   String @id @default(cuid())
-  name String
-  uid  String
-
-
-  // RELATIONS
-  branches Branch[]
-}
-
 model Branch {
   id   String @id @default(cuid())
   name String
@@ -218,9 +208,6 @@ model Branch {
   id_address String  @unique
 
   // INVERSE RELATIONS
-
-  company    Company @relation(fields: [id_company], references: [id])
-  id_company String
 
   delivery_branch_deliveries Delivery[]
 
