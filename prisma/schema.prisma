@@ -237,7 +237,6 @@ model Parcel {
 
   // INVERSE RELATIONS
 
-  scans Scan[]
 
 }
 
@@ -253,28 +252,6 @@ model Dalabel {
 
   parcel    Parcel @relation(fields: [id_parcel], references: [id])
   id_parcel String
-
-  scan_dalabel_scans Scan[]
-}
-
-model Scan {
-  id String @id @default(cuid())
-
-  data String
-
-
-  // RELATIONS
-
-  //machine Machine?
-
-  dalabel    Dalabel? @relation(fields: [id_dalabel], references: [id])
-  id_dalabel String?
-
-
-  // INVERSE RELATIONS
-
-  parcel    Parcel? @relation(fields: [id_parcel], references: [id])
-  id_parcel String?
 }
 
 model Surcharge {
